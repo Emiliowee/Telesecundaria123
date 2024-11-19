@@ -1,0 +1,344 @@
+@model ProyTelesecundaria.Models.Alumnos
+
+
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión Secretaria</title>
+    <link rel="stylesheet" href="~/css/Stylos.css" />
+    <script>
+        function showSection(sectionId) {
+            // Selecciona todas las secciones con la clase 'section'
+            let sections = document.querySelectorAll('.section');
+
+            // Oculta todas las secciones
+            sections.forEach(function (section) {
+                section.classList.add('hidden')
+            });
+
+            // Muestra la sección seleccionada
+            let selectedSection = document.getElementById(sectionId);
+            selectedSection.classList.remove('hidden');
+        }
+    </script>
+</head>
+
+<body>
+
+    <!-- Mostrar errores de validación -->
+    @{
+        var errores = ViewData.ModelState.Values.SelectMany(v => v.Errors);
+    }
+
+    @if (errores.Any())
+    {
+        <div class="alert alert-danger">
+            <ul>
+                @foreach (var error in errores)
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            </ul>
+        </div>
+    }
+
+    <div class="container">
+        <div class="sidebar">
+            <button onclick="showSection('alumnos')">Gestionar Alumnos</button>
+            <button onclick="showSection('maestros')">Gestionar Maestros</button>
+            <button onclick="showSection('aulas')">Gestionar Aulas</button>
+            <button onclick="showSection('usuarios')">Gestionar Usuarios</button>
+            <button onclick="alert('Saliendo...')">Salir</button>
+            <br>
+            <button onclick="showSection('LISTA')">VER LISTA</button>
+        </div>
+
+        <div class="main-content">
+            <h2>Bienvenido, Secretario</h2>
+            <p>Seleccione una opción en el menú para gestionar alumnos, aulas, maestros o usuarios del sistema.</p>
+
+            <!-- Sección de Alumnos -->
+            <div id="alumnos" class="section">
+                <h3>Gestionar Alumnos</h3>
+                <div class="section-title">Datos del Alumno</div>
+                <form asp-action="Crear" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <!-- Matrícula -->
+                    <div class="form-group">
+                        <label for="matricula">Matrícula:</label>
+                        <input type="text" id="matricula" name="Matricula" placeholder="Ingrese la matrícula" required>
+                    </div>
+
+                    <!-- Nombre y Apellido -->
+                    <div class="form-group">
+                        <label for="nombre-alumno">Nombre:</label>
+                        <input type="text" id="nombre-alumno" name="Nombre" placeholder="Ingrese el nombre del alumno"
+                            required>
+                        <label for="apellido-alumno">Apellido:</label>
+                        <input type="text" id="apellido-alumno" name="Apellido"
+                            placeholder="Ingrese el apellido del alumno" required>
+                    </div>
+
+                    <!-- Fecha de Nacimiento y Dirección -->
+                    <div class="form-group">
+                        <label for="fecha-nacimiento">Fecha de Nacimiento:</label>
+                        <input type="date" id="fecha-nacimiento" name="FechaNacimiento" required>
+
+                        <label for="direccion-alumno">Dirección:</label>
+                        <input type="text" id="direccion-alumno" name="Direccion" placeholder="Ingrese la dirección"
+                            required>
+                    </div>
+
+                    <!-- Teléfono y Correo Electrónico -->
+                    <div class="form-group">
+                        <label for="telefono-alumno">Teléfono:</label>
+                        <input type="tel" id="telefono-alumno" name="Telefono" placeholder="Ingrese el teléfono"
+                            required>
+
+                        <label for="email-alumno">Correo Electrónico:</label>
+                        <input type="email" id="email-alumno" name="Correo" placeholder="Ingrese el correo" required>
+                    </div>
+
+                    <!-- Grado y Grupo -->
+                    <div class="form-group">
+                        <label for="grado">Grado:</label>
+                        <input type="number" id="grado" name="Grado" placeholder="Ingrese el grado" required>
+
+                        <label for="grupo">Grupo:</label>
+                        <input type="text" id="grupo" name="Grupo" placeholder="Ingrese el grupo" required>
+                    </div>
+
+                    <!-- Sección para los datos del tutor -->
+                    <h3>Datos del Tutor</h3>
+                    <div class="form-group">
+                        <label for="nombre-tutor">Nombre del Tutor:</label>
+                        <input type="text" id="nombre-tutor" name="NombreTutor"
+                            placeholder="Ingrese el nombre del tutor" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="telefono-tutor">Teléfono del Tutor:</label>
+                        <input type="tel" id="telefono-tutor" name="TelefonoTutor"
+                            placeholder="Ingrese el teléfono del tutor" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email-tutor">Correo Electrónico del Tutor:</label>
+                        <input type="email" id="email-tutor" name="CorreoTutor"
+                            placeholder="Ingrese el correo del tutor" required>
+                    </div>
+
+                    <!-- Botón de Enviar -->
+                    <div class="buttons-group">
+                        <button type="submit" class="btn btn-registrar">Registrar</button>
+                    </div>
+
+                </form>
+                <br>
+            </div>
+
+
+            <!-- Sección de Aulas -->
+            <!-- registro de Aulas -->
+
+            <div id="aulas" class="section hidden">
+                <h3>registro de Aulas</h3>
+                <form asp-action="RegistrarAula" method="post">
+                    <div class="form-group">
+                        <label for="ID-aula">ID de Aula:</label>
+                        <input type="number" id="ID-aula" placeholder="Ingrese el ID del aula">
+                        <button title="Buscar"><img src="imagenes/logo busqueda.png" alt="Buscar"
+                                style="width: 20px;"></button>
+                    </div>
+                    <div class="form-group">
+                        <label for="Cupo-aula">Cupo del aula:</label>
+                        <input type="number" id="Cupo-aula" placeholder="Ingrese la cantidad de alumnos">
+                    </div>
+                    <br>
+                    <div class="buttons-group">
+                        <button type="submit" class="btn btn-registrar" formmethod="post"
+                            formaction="/Aulas/Registrar">Registrar</button>
+                        <button type="submit" class="btn btn-registrar" formmethod="post"
+                            formaction="/Aulas/Registrar">Modificar</button>
+                        <button type="submit" class="btn btn-registrar" formmethod="post"
+                            formaction="/Aulas/Registrar">Eliminar</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Sección de Maestros -->
+            <div id="maestros" class="section hidden">
+                <h3>Gestionar Maestros</h3>
+                <form asp-action="RegistrarMaestro" method="post">
+                    <form id="form-registro-maestro">
+                        <div class="form-group">
+                            <label for="ID-maestro">ID del Maestro: </label>
+                            <input type="text" id="ID-maestro" placeholder="Ingrese el ID">
+                            <button title="Buscar"><img src="imagenes/logo busqueda.png" alt="Buscar"
+                                    style="width: 20px;"></button>
+                        </div>
+                        <div class="form-group">
+                            <label for="nombre-maestro">Nombre del Maestro:</label>
+                            <input type="text" id="nombre-maestro" placeholder="Ingrese el nombre del maestro">
+
+                            <label for="apellido-maestro">Apellido del Maestro:</label>
+                            <input type="text" id="apellido-maestro" placeholder="Ingrese el apellido del maestro">
+                        </div>
+                        <div class="form-group">
+                            <label for="telefono-maestro">Teléfono:</label>
+                            <input type="tel" id="telefono-maestro" placeholder="Ingrese el teléfono">
+
+                            <label for="email-maestro">Correo Electrónico:</label>
+                            <input type="email" id="email-maestro" placeholder="Ingrese el correo">
+                        </div>
+                        <div class="form-group">
+                            <label for="Horario">Horario de clases:</label>
+                            <input type="text" id="Horario" placeholder="Ingrese el Horario">
+
+                            <label for="materia">Materia:</label>
+                            <input type="text" id="materia" placeholder="Ingrese la materia">
+                        </div>
+                        <div class="form-group">
+                            <label for="ID-aula">ID de Aula:</label>
+                            <input type="number" id="ID-aula" placeholder="Ingrese el ID del aula">
+                        </div>
+                    </form>
+                </form>
+                <br>
+
+                <script>
+                    function agregarFila() {
+                        // Obtiene los valores del formulario
+                        const ID = document.getElementById('ID-maestro').value;
+                        const nombre = document.getElementById('nombre-maestro').value;
+                        const apellido = document.getElementById('apellido-maestro').value;
+                        const Horario = document.getElementById('Horario').value;
+                        const materia = document.getElementById('materia').value;
+
+                        // Valida que todos los campos estén completos
+                        if (!ID || !apellido || !nombre || !Horario || !materia) {
+                            alert('Por favor, completa todos los campos.');
+                            return;
+                        }
+
+                        // Crea una nueva fila y la agrega a la tabla
+                        const tabla = document.querySelector('.styled-table tbody');
+                        const nuevaFila = document.createElement('tr');
+                        nuevaFila.innerHTML = `
+                            <td>${ID}</td>
+                            <td>${nombre}</td>
+                            <td>${apellido}</td>
+                            <td>${Horario}</td>
+                            <td>${materia}</td>
+                        `;
+                        tabla.appendChild(nuevaFila);
+
+                        // Muestra mensaje de éxito
+                        alert('¡Registro exitoso!');
+
+                        // Limpia el formulario después de agregar la fila
+                        document.getElementById('form-registro-maestro').reset();
+                    }
+
+                    function confirmarAccion(accion) {
+                        // Solicita confirmación antes de modificar o eliminar
+                        if (confirm(`¿Estás seguro de que deseas ${accion} este registro?`)) {
+                            alert(`Registro ${accion} con éxito`);
+                        }
+                    }
+                </script>
+
+                <div class="table-container">
+                    <button onclick="Agregar()"> <label for="Agregar">Agregar</label></button>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID del Maestro</th>
+                                <th>Nombre del Maestro</th>
+                                <th>Apellido del Maestro</th>
+                                <th>Horario de Clases</th>
+                                <th>Aula</th>
+                                <th>Materia</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Filas de ejemplo -->
+                            <tr>
+                                <td>P001</td>
+                                <td>Juan</td>
+                                <td>Pérez</td>
+                                <td>8-12</td>
+                                <td>A02</td>
+                                <td>matematicas</td>
+                            </tr>
+                            <tr>
+                                <td>P002</td>
+                                <td>María</td>
+                                <td>González</td>
+                                <td>10-14</td>
+                                <td>B02</td>
+                                <td>Español</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="buttons-group">
+                    <button type="button" class="btn btn-registrar" onclick="agregarFila()">Registrar</button>
+                    <button type="button" class="btn btn-modificar"
+                        onclick="confirmarAccion('modificar')">Modificar</button>
+                    <button type="button" class="btn btn-eliminar"
+                        onclick="confirmarAccion('eliminar')">Eliminar</button>
+                </div>
+            </div>
+
+
+            <!-- Sección de Usuarios -->
+            <div id="usuarios" class="section hidden">
+                <h3>Gestionar Usuarios</h3>
+                <form asp-action="RegistrarUsuario" method="post">
+                    <div class="form-group">
+                        <label for="ID-usuario">ID de usuario:</label>
+                        <input type="text" id="ID-usuario" placeholder="Ingrese el ID de usuario">
+                        <button title="Buscar"><img src="imagenes/logo busqueda.png" alt="Buscar"
+                                style="width: 20px;"></button>
+                    </div>
+                    <div class="form-group">
+                        <label for="nombre-usuario">Nombre de Usuario:</label>
+                        <input type="text" id="nombre-usuario" placeholder="Ingrese el nombre de usuario">
+                    </div>
+                    <div class="form-group">
+                        <label for="Contraseña-usuario">Contraseña:</label>
+                        <input type="password" id="Contraseña-usuario" placeholder="Ingrese la contraseña">
+                    </div>
+                    <div class="form-group">
+                        <label for="email-usuario">Correo Electrónico:</label>
+                        <input type="email" id="email-usuario" placeholder="Ingrese el correo electrónico">
+                    </div>
+                    <div class="form-group">
+                        <label for="Tipo-usuario">Tipo de usuario:</label>
+                        <select id="Tipo-usuario">
+                            <option value="director">Director</option>
+                            <option value="secretario">Secretario</option>
+                            <option value="personal-administrativo">Personal administrativo</option>
+                            <option value="maestros">Maestro</option>
+                        </select>
+                    </div>
+                    <br>
+                    <div class="buttons-group">
+                        <button type="submit" class="btn btn-registrar">Registrar</button>
+                        <button type="button" class="btn btn-modificar">Modificar</button>
+                        <button type="button" class="btn btn-eliminar">Eliminar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,83 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ProyTelesecundaria</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/sidebar.css" asp-append-version="true" />
+</head>
+<body>
+    @if (Context.Request.Path.StartsWithSegments("/Home/Principal"))
+    {
+        <div class="sidebar">
+            <div class="profile-section">
+                <div class="profile-circle"></div>
+            </div>
+
+            <div class="menu-section">
+                <a href="#" class="menu-item">
+                    <i class="fas fa-users-class"></i>
+                    Alumnos
+                    <div class="glow"></div>
+                    <span class="tooltip">Gestión de alumnos y registro</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-book"></i>
+                    Maestros
+                    <div class="glow"></div>
+                    <span class="tooltip">Administración de materias y cursos</span>
+                </a>
+                <a href="#" class="menu-item selected">
+                    <i class="fas fa-tv"></i>
+                    Aulas
+                    <div class="glow"></div>
+                    <span class="tooltip">Clases en vivo y grabaciones</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-chart-line"></i>
+                    Usuarios
+                    <div class="glow"></div>
+                    <span class="tooltip">Sistema de evaluación y notas</span>
+                </a>
+            </div>
+
+            <div class="footer-section">
+                <a href="/Login" class="menu-item">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Salir
+                    <div class="glow"></div>
+                </a>
+            </div>
+        </div>
+    }
+
+    <div class="content">
+        @RenderBody()
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script>
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('mousemove', (e) => {
+                const rect = item.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const glow = item.querySelector('.glow');
+                glow.style.setProperty('--x', `${x}px`);
+            });
+
+            item.addEventListener('click', (e) => {
+                if (!e.currentTarget.classList.contains('footer-section')) {
+                    e.preventDefault();
+                    document.querySelectorAll('.menu-item').forEach(menuItem => {
+                        menuItem.classList.remove('selected');
+                    });
+                    item.classList.add('selected');
+                }
+            });
+        });
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

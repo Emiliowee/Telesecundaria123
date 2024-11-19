@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Inventario</title>
+    <link rel="stylesheet" href="css/bootstrap-grid.min.css">
+    <link rel="stylesheet" href="~/css/Stylos.css" />
+</head>
+
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <button onclick="mostrarSeccion('register')">Registrar Material</button>
+            <button onclick="mostrarSeccion('loan')">Registrar Préstamo</button>
+            <button onclick="alert('Saliendo...')">Salir</button>
+            <br><br>
+            <button onclick="verLista()">VER LISTA</button>
+        </div>
+
+        <div class="main-content">
+            <h2>Gestión de Inventario</h2>
+
+            <!-- Sección de Registro de Material -->
+            <div id="register-section" class="register-section">
+                <h3>Registrar Material</h3>
+                <div class="form-group">
+                    <label for="material-id">ID del material:</label>
+                    <input type="number" id="material-id" placeholder="Ingrese el ID">
+                    <button title="Buscar" onclick="buscarMaterial()"><img src="wwwroot/css/imagenes/logo.png" alt="Buscar"
+                            style="width: 20px;"></button>
+                </div>
+                <div class="form-group">
+                    <label for="material-name">Nombre del material:</label>
+                    <input type="text" id="material-name" placeholder="Ingrese nombre del material">
+
+                    <label for="cantidad">Cantidad:</label>
+                    <input type="number" id="cantidad" placeholder="Ingrese la cantidad">
+                </div>
+
+                <div class="form-group">
+                    <label for="descripcion">Descripción:</label>
+                    <input type="text" id="descripcion" placeholder="Descripción del artículo">
+                </div>
+                <br>
+
+                <!-- Tabla de materiales registrados -->
+                <button onclick="Agregar()"> <label for="Agregar">Agregar</label></button>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Cantidad</th>
+                            <th>Descripción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Filas de ejemplo -->
+                        <tr>
+                            <td>001</td>
+                            <td>Libro de Matemáticas</td>
+                            <td>20</td>
+                            <td>Libros de texto de matemáticas para secundaria</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <br>
+                <div class="buttons-group">
+                    <button type="submit" class="btn btn-registrar">Registrar</button>
+                    <button type="button" class="btn btn-modificar">Modificar</button>
+                    <button type="button" class="btn btn-eliminar">Eliminar</button>
+                </div>
+            </div>
+
+            <!-- Sección de Registro de Préstamo -->
+            <div id="loan-section" class="loan-section">
+                <h3>Registrar Préstamo</h3>
+                <div class="form-group">
+                    <label for="ID-prestamo">ID préstamo:</label>
+                    <input type="text" id="ID-prestamo" placeholder="Ingrese ID de préstamo">
+                    <button title="Buscar" onclick="buscarPrestamo()"><img src="wwwroot/css/imagenes/logo.png" alt="Buscar"
+                        style="width: 20px;"></button>
+                    
+                </div>
+                <div class="form-group">
+                    <label for="IDMaterial">ID Material:</label>
+                    <input type="text" id="IDMaterial" placeholder="ID del Material">
+
+                    <button title="Buscar" onclick="buscarPrestamo()"><img src="wwwroot/css/imagenes/logo.png" alt="Buscar"
+                        style="width: 20px;"></button>
+
+                    <label for="material-prestamo">Material:</label>
+                    <input type="text" id="material-prestamo" placeholder="Material a prestar">
+
+                </div>
+
+                <div class="form-group">
+                    <label for="destinatario">Matricula:</label>
+                    <input type="text" id="matricula" placeholder="Matricula del alumno">
+                    <button title="Buscar" onclick="buscarPrestamo()"><img src="wwwroot/css/imagenes/logo.png" alt="Buscar"
+                        style="width: 20px;"></button>
+                    <label for="destinatario">Alumno:</label>
+                    <input type="text" id="destinatario" placeholder="Nombre del alumno">
+                </div>
+
+                <div class="form-group">
+                    <label for="cantidad-prestamo">Cantidad:</label>
+                    <input type="number" id="cantidad-prestamo" placeholder="Ingrese la cantidad a prestar">
+                    <label for="fecha">Fecha de devolución:</label>
+                    <input type="date" id="fecha">
+                </div>
+                <br>
+
+
+                <!-- Tabla de préstamos registrados -->
+                <button onclick="Agregar()"> <label for="Agregar">Agregar</label></button>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID Préstamo</th>
+                            <th>IDMaterial</th>
+                            <th>Material</th>
+                            <th>Matricula</th>
+                            <th>Nombre del alumno</th>
+                            <th>Cantidad</th>
+                            <th>Fecha de Devolución</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Filas de ejemplo -->
+                        <tr>
+                            <td>PR001</td>
+                            <td>0002</td>
+                            <td>calculadora</td>
+                            <td>0023</td>
+                            <td>Juan Perez</td>
+                            <td>2</td>
+                            <td>30/10/2024</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <br>
+                <div class="buttons-group">
+                    <button type="submit" class="btn btn-registrar">Registrar</button>
+                    <button type="button" class="btn btn-modificar">Modificar</button>
+                    <button type="button" class="btn btn-eliminar">Eliminar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function mostrarSeccion(section) {
+            const registerSection = document.getElementById('register-section');
+            const loanSection = document.getElementById('loan-section');
+
+            registerSection.style.display = 'none';
+            loanSection.style.display = 'none';
+
+            if (section == 'register') {
+                registerSection.style.display = 'block';
+            } else if (section == 'loan') {
+                loanSection.style.display = 'block';
+            }
+        }
+    </script>
+</body>
