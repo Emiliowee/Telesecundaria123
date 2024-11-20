@@ -1,0 +1,374 @@
+@model IEnumerable<ProyTelesecundaria.Models.Alumnos>
+
+<div class="main-content">
+    <div class="container">
+        <h2 class="page-title">Gestión de Alumnos</h2>
+
+        <!-- Sección de búsqueda y formulario -->
+        <div class="form-container">
+            <div class="search-section">
+                <div class="form-group">
+                    <label for="searchId">Matrícula:</label>
+                    <div class="search-container">
+                        <input type="text" id="searchId" name="searchId" required
+                               placeholder="Ingrese la matrícula">
+                        <button id="searchButton" title="Buscar">
+                            <i class="fas fa-search"></i>
+                            Buscar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <form id="alumnoForm" class="user-form">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="matriculaOriginal" name="matriculaOriginal">
+                    
+                    <!-- Datos del Alumno -->
+                    <div class="form-group">
+                        <label for="nombre">Nombre:</label>
+                        <input type="text" id="nombre" name="Nombre" required>
+                        
+                        <label for="apellido">Apellido:</label>
+                        <input type="text" id="apellido" name="Apellido" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fechaNacimiento">Fecha de Nacimiento:</label>
+                        <input type="date" id="fechaNacimiento" name="FechaNacimiento" required>
+                        
+                        <label for="direccion">Dirección:</label>
+                        <input type="text" id="direccion" name="Direccion" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="telefono">Teléfono:</label>
+                        <input type="tel" id="telefono" name="Telefono" required>
+                        
+                        <label for="correo">Correo:</label>
+                        <input type="email" id="correo" name="Correo" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="grado">Grado:</label>
+                        <input type="number" id="grado" name="Grado" min="1" max="6" required>
+                        
+                        <label for="grupo">Grupo:</label>
+                        <input type="text" id="grupo" name="Grupo" maxlength="1" required>
+                    </div>
+
+                    <!-- Datos del Tutor -->
+                    <div class="section-title">Datos del Tutor</div>
+                    
+                    <div class="form-group">
+                        <label for="nombreTutor">Nombre del Tutor:</label>
+                        <input type="text" id="nombreTutor" name="NombreTutor" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="telefonoTutor">Teléfono del Tutor:</label>
+                        <input type="tel" id="telefonoTutor" name="TelefonoTutor" required>
+                        
+                        <label for="correoTutor">Correo del Tutor:</label>
+                        <input type="email" id="correoTutor" name="CorreoTutor" required>
+                    </div>
+
+                    <div class="buttons-group">
+                        <button type="button" id="btnRegistrar" class="btn btn-registrar">
+                            <i class="fas fa-plus"></i> Registrar
+                        </button>
+                        <button type="button" id="btnModificar" class="btn btn-modificar">
+                            <i class="fas fa-edit"></i> Modificar
+                        </button>
+                        <button type="button" id="btnEliminar" class="btn btn-eliminar">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </button>
+                        <button type="button" id="btnLimpiar" class="btn btn-secondary">
+                            <i class="fas fa-broom"></i> Limpiar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tabla de Alumnos -->
+        <div class="table-section">
+            <h3 class="section-title">Alumnos Registrados</h3>
+            <div class="table-container">
+                <table class="styled-table">
+                    <thead>
+                        <tr>
+                            <th>Matrícula</th>
+                            <th>Nombre</th>
+                            <th>Apellido</th>
+                            <th>Grado</th>
+                            <th>Grupo</th>
+                            <th>Teléfono</th>
+                            <th>Correo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        @foreach (var alumno in Model)
+                        {
+                            <tr>
+                                <td>@alumno.Matricula</td>
+                                <td>@alumno.Nombre</td>
+                                <td>@alumno.Apellido</td>
+                                <td>@alumno.Grado</td>
+                                <td>@alumno.Grupo</td>
+                                <td>@alumno.Telefono</td>
+                                <td>@alumno.Correo</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Botones
+            document.getElementById('btnRegistrar').addEventListener('click', registrarAlumno);
+            document.getElementById('btnModificar').addEventListener('click', modificarAlumno);
+            document.getElementById('btnEliminar').addEventListener('click', eliminarAlumno);
+            document.getElementById('btnLimpiar').addEventListener('click', limpiarFormulario);
+            document.getElementById('searchButton').addEventListener('click', buscarAlumno);
+
+            // Agregar el evento de doble clic en las filas
+            const tableRows = document.querySelectorAll('.styled-table tbody tr');
+            tableRows.forEach(row => {
+                row.addEventListener('dblclick', function() {
+                    const matricula = this.cells[0].textContent;
+                    document.getElementById('searchId').value = matricula;
+                    buscarAlumno();
+                    resaltarFila(matricula);
+                });
+            });
+        });
+
+        async function registrarAlumno() {
+            if (!validarFormulario()) return;
+
+            const datos = {
+                Matricula: parseInt(document.getElementById('searchId').value),
+                Nombre: document.getElementById('nombre').value,
+                Apellido: document.getElementById('apellido').value,
+                FechaNacimiento: document.getElementById('fechaNacimiento').value,
+                Direccion: document.getElementById('direccion').value,
+                Telefono: document.getElementById('telefono').value,
+                Correo: document.getElementById('correo').value,
+                Grado: parseInt(document.getElementById('grado').value),
+                Grupo: document.getElementById('grupo').value,
+                NombreTutor: document.getElementById('nombreTutor').value,
+                TelefonoTutor: document.getElementById('telefonoTutor').value,
+                CorreoTutor: document.getElementById('correoTutor').value
+            };
+
+            try {
+                const response = await fetch('/Alumnos/Crear', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    },
+                    body: JSON.stringify(datos)
+                });
+
+                const result = await response.text();
+
+                if (response.ok) {
+                    alert('Alumno registrado con éxito');
+                    window.location.reload();
+                } else {
+                    alert('Error al registrar alumno: ' + result);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al registrar alumno');
+            }
+        }
+
+        async function buscarAlumno() {
+            const matricula = document.getElementById('searchId').value;
+            if (!matricula) {
+                alert('Por favor, ingrese una matrícula');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/Alumnos/BuscarAlumno?matricula=${matricula}`);
+                if (response.ok) {
+                    const alumno = await response.json();
+                    llenarFormulario(alumno);
+                    resaltarFila(matricula);
+                } else {
+                    alert('Alumno no encontrado');
+                    limpiarFormulario();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al buscar alumno');
+            }
+        }
+
+        async function modificarAlumno() {
+            if (!validarFormulario()) {
+                alert('Datos incorrectos');
+                return;
+            }
+
+            if (!confirm('¿Desea modificar Alumno?')) {
+                limpiarFormulario();
+                return;
+            }
+
+            const matriculaOriginal = document.getElementById('matriculaOriginal').value;
+            const matriculaNueva = document.getElementById('searchId').value;
+            
+            const datos = {
+                MatriculaOriginal: parseInt(matriculaOriginal),
+                Alumno: {
+                    Matricula: parseInt(matriculaNueva),
+                    Nombre: document.getElementById('nombre').value,
+                    Apellido: document.getElementById('apellido').value,
+                    FechaNacimiento: document.getElementById('fechaNacimiento').value,
+                    Direccion: document.getElementById('direccion').value,
+                    Telefono: document.getElementById('telefono').value,
+                    Correo: document.getElementById('correo').value,
+                    Grado: parseInt(document.getElementById('grado').value),
+                    Grupo: document.getElementById('grupo').value,
+                    NombreTutor: document.getElementById('nombreTutor').value,
+                    TelefonoTutor: document.getElementById('telefonoTutor').value,
+                    CorreoTutor: document.getElementById('correoTutor').value
+                }
+            };
+
+            try {
+                const response = await fetch('/Alumnos/Editar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    },
+                    body: JSON.stringify(datos)
+                });
+
+                if (response.ok) {
+                    alert('Cambios realizados con éxito');
+                    limpiarFormulario();
+                    window.location.reload();
+                } else {
+                    const error = await response.text();
+                    alert('Error al modificar alumno: ' + error);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al modificar alumno');
+            }
+        }
+
+        async function eliminarAlumno() {
+            const matricula = document.getElementById('matriculaOriginal').value;
+            if (!matricula) {
+                alert('Por favor, primero busque un alumno');
+                return;
+            }
+
+            if (!confirm('¿Desea Eliminar Alumno?')) {
+                limpiarFormulario();
+                return;
+            }
+
+            try {
+                const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+                const response = await fetch('/Alumnos/Eliminar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': token
+                    },
+                    body: JSON.stringify({ matricula: matricula })
+                });
+
+                if (response.ok) {
+                    alert('Alumno eliminado con éxito');
+                    limpiarFormulario();
+                    window.location.reload();
+                } else {
+                    const error = await response.text();
+                    alert('Error al eliminar alumno: ' + error);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al eliminar alumno');
+            }
+        }
+
+        function limpiarFormulario() {
+            document.getElementById('matriculaOriginal').value = '';
+            document.getElementById('searchId').value = '';
+            document.getElementById('nombre').value = '';
+            document.getElementById('apellido').value = '';
+            document.getElementById('fechaNacimiento').value = '';
+            document.getElementById('direccion').value = '';
+            document.getElementById('telefono').value = '';
+            document.getElementById('correo').value = '';
+            document.getElementById('grado').value = '';
+            document.getElementById('grupo').value = '';
+            document.getElementById('nombreTutor').value = '';
+            document.getElementById('telefonoTutor').value = '';
+            document.getElementById('correoTutor').value = '';
+            
+            const tableRows = document.querySelectorAll('.styled-table tbody tr');
+            tableRows.forEach(row => row.classList.remove('selected-row'));
+        }
+
+        function validarFormulario() {
+            const matricula = document.getElementById('searchId').value;
+            const nombre = document.getElementById('nombre').value;
+            const apellido = document.getElementById('apellido').value;
+            // ... resto de validaciones ...
+
+            if (!matricula || !nombre || !apellido /* ... más validaciones ... */) {
+                alert('Por favor, complete todos los campos');
+                return false;
+            }
+
+            return true;
+        }
+
+        function resaltarFila(matricula) {
+            const tableRows = document.querySelectorAll('.styled-table tbody tr');
+            tableRows.forEach(row => {
+                if (row.cells[0].textContent === matricula.toString()) {
+                    row.classList.add('selected-row');
+                } else {
+                    row.classList.remove('selected-row');
+                }
+            });
+        }
+
+        function llenarFormulario(alumno) {
+            document.getElementById('matriculaOriginal').value = alumno.matricula;
+            document.getElementById('searchId').value = alumno.matricula;
+            
+            document.getElementById('nombre').value = alumno.nombre;
+            document.getElementById('apellido').value = alumno.apellido;
+            const fecha = new Date(alumno.fechaNacimiento);
+            const fechaFormateada = fecha.toISOString().split('T')[0];
+            document.getElementById('fechaNacimiento').value = fechaFormateada;
+            document.getElementById('direccion').value = alumno.direccion;
+            document.getElementById('telefono').value = alumno.telefono;
+            document.getElementById('correo').value = alumno.correo;
+            document.getElementById('grado').value = alumno.grado;
+            document.getElementById('grupo').value = alumno.grupo;
+            document.getElementById('nombreTutor').value = alumno.nombreTutor;
+            document.getElementById('telefonoTutor').value = alumno.telefonoTutor;
+            document.getElementById('correoTutor').value = alumno.correoTutor;
+        }
+    </script>
+} 

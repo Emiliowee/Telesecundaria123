@@ -8,35 +8,51 @@ namespace ProyTelesecundaria.Controllers
     public class LoginController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly ILogger<LoginController> _logger;
 
-        public LoginController(ApplicationDbContext context, ILogger<LoginController> logger)
+        public LoginController(ApplicationDbContext context)
         {
             _context = context;
-            _logger = logger;
         }
 
         public IActionResult Index()
         {
+            if (HttpContext.Session.GetString("UserLoggedIn") == "true")
+            {
+                return RedirectToAction("Principal", "Home");
+            }
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> Authenticate(string correo, string contraseña)
+        public async Task<IActionResult> Login(string correo, string contraseña)
         {
-            _logger.LogInformation($"Intento de login para correo: {correo}");
-
-            var usuario = await _context.Usuarios
-                .FirstOrDefaultAsync(u => u.Correo == correo && u.Contraseña == contraseña);
-
-            if (usuario != null)
+            try
             {
-                _logger.LogInformation("Login exitoso");
-                return Json(new { success = true, redirectUrl = "/Home/Principal" });
-            }
+                var usuario = await _context.Usuarios
+                    .FirstOrDefaultAsync(u => u.Correo == correo && u.Contraseña == contraseña);
 
-            _logger.LogWarning("Login fallido");
-            return Json(new { success = false, message = "Credenciales inválidas" });
+                if (usuario != null)
+                {
+                    HttpContext.Session.SetString("UserLoggedIn", "true");
+                    HttpContext.Session.SetString("UserName", usuario.Nombre);
+                    HttpContext.Session.SetString("UserType", usuario.TipoUsuario);
+                    return RedirectToAction("Principal", "Home");
+                }
+
+                TempData["LoginError"] = "Usuario o contraseña incorrectos";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["LoginError"] = "Error al intentar iniciar sesión";
+                return RedirectToAction("Index");
+            }
+        }
+
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Index");
         }
     }
 }

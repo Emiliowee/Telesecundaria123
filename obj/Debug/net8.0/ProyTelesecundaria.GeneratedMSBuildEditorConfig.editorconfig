@@ -18,6 +18,14 @@ build_property.GenerateRazorMetadataSourceChecksumAttributes =
 build_property.MSBuildProjectDirectory = C:\Users\Emilio\Desktop\Telesecundaria\ProyTelesecundaria
 build_property._RazorSourceGeneratorDebug = 
 
+[C:/Users/Emilio/Desktop/Telesecundaria/ProyTelesecundaria/Views/Alumnos/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWx1bW5vc1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Emilio/Desktop/Telesecundaria/ProyTelesecundaria/Views/Aulas/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXVsYXNcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/Emilio/Desktop/Telesecundaria/ProyTelesecundaria/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
@@ -34,6 +42,14 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTG9naW5cSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/Emilio/Desktop/Telesecundaria/ProyTelesecundaria/Views/Maestros/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWFlc3Ryb3NcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Emilio/Desktop/Telesecundaria/ProyTelesecundaria/Views/Materias/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWF0ZXJpYXNcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/Emilio/Desktop/Telesecundaria/ProyTelesecundaria/Views/Shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
@@ -46,12 +62,24 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXN1YXJpb3NcY2FsaWZpY2FjaW9uZXMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/Emilio/Desktop/Telesecundaria/ProyTelesecundaria/Views/Usuarios/Crear.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXN1YXJpb3NcQ3JlYXIuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Emilio/Desktop/Telesecundaria/ProyTelesecundaria/Views/Usuarios/Editar.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXN1YXJpb3NcRWRpdGFyLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/Emilio/Desktop/Telesecundaria/ProyTelesecundaria/Views/Usuarios/gestionAdministrativa.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXN1YXJpb3NcZ2VzdGlvbkFkbWluaXN0cmF0aXZhLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Emilio/Desktop/Telesecundaria/ProyTelesecundaria/Views/Usuarios/gestionar.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXN1YXJpb3NcZ2VzdGlvbmFyLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Emilio/Desktop/Telesecundaria/ProyTelesecundaria/Views/Usuarios/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXN1YXJpb3NcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Emilio/Desktop/Telesecundaria/ProyTelesecundaria/Views/_ViewImports.cshtml]

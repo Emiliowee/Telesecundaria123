@@ -17,7 +17,18 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 
+// Agregar servicios de sesión
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
 var app = builder.Build();
+
+// Usar sesiones
+app.UseSession();
 
 // Configura el pipeline de solicitudes HTTP.
 if (!app.Environment.IsDevelopment())

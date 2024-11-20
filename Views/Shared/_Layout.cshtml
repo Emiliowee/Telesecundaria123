@@ -7,9 +7,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="~/css/sidebar.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/usuarios.css" asp-append-version="true" />
 </head>
 <body>
-    @if (Context.Request.Path.StartsWithSegments("/Home/Principal"))
+    @if (Context.Session.GetString("UserLoggedIn") == "true")
     {
         <div class="sidebar">
             <div class="profile-section">
@@ -17,34 +18,41 @@
             </div>
 
             <div class="menu-section">
-                <a href="#" class="menu-item">
-                    <i class="fas fa-users-class"></i>
+                <a asp-controller="Alumnos" asp-action="Index" class="menu-item">
+                    <i class="fas fa-users"></i>
                     Alumnos
                     <div class="glow"></div>
                     <span class="tooltip">Gestión de alumnos y registro</span>
                 </a>
-                <a href="#" class="menu-item">
-                    <i class="fas fa-book"></i>
+                <a asp-controller="Maestros" asp-action="Index" class="menu-item">
+                    <i class="fas fa-chalkboard-teacher"></i>
                     Maestros
                     <div class="glow"></div>
-                    <span class="tooltip">Administración de materias y cursos</span>
+                    <span class="tooltip">Administración de maestros</span>
                 </a>
-                <a href="#" class="menu-item selected">
-                    <i class="fas fa-tv"></i>
+                <a asp-controller="Materias" asp-action="Index" class="menu-item">
+                    <i class="fas fa-book-open"></i>
+                    Materias
+                    <div class="glow"></div>
+                    <span class="tooltip">Gestión de materias</span>
+                </a>
+                <a asp-controller="Aulas" asp-action="Index" class="menu-item">
+                    <i class="fas fa-door-open"></i>
                     Aulas
                     <div class="glow"></div>
-                    <span class="tooltip">Clases en vivo y grabaciones</span>
+                    <span class="tooltip">Gestión de aulas y espacios</span>
                 </a>
-                <a href="#" class="menu-item">
-                    <i class="fas fa-chart-line"></i>
+                <a asp-controller="Usuarios" asp-action="Index" class="menu-item">
+                    <i class="fas fa-user-cog"></i>
                     Usuarios
                     <div class="glow"></div>
-                    <span class="tooltip">Sistema de evaluación y notas</span>
+                    <span class="tooltip">Gestión de usuarios del sistema</span>
                 </a>
+                
             </div>
 
             <div class="footer-section">
-                <a href="/Login" class="menu-item">
+                <a href="@Url.Action("Logout", "Login")" class="menu-item">
                     <i class="fas fa-sign-out-alt"></i>
                     Salir
                     <div class="glow"></div>
@@ -53,28 +61,31 @@
         </div>
     }
 
-    <div class="content">
+    <div class="@(Context.Session.GetString("UserLoggedIn") == "true" ? "content" : "")">
         @RenderBody()
     </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script>
-        document.querySelectorAll('.menu-item').forEach(item => {
-            item.addEventListener('mousemove', (e) => {
-                const rect = item.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const glow = item.querySelector('.glow');
-                glow.style.setProperty('--x', `${x}px`);
-            });
-
-            item.addEventListener('click', (e) => {
-                if (!e.currentTarget.classList.contains('footer-section')) {
-                    e.preventDefault();
-                    document.querySelectorAll('.menu-item').forEach(menuItem => {
-                        menuItem.classList.remove('selected');
-                    });
+        document.addEventListener('DOMContentLoaded', function() {
+            // Obtener la ruta actual
+            const currentPath = window.location.pathname;
+            
+            // Encontrar y activar el botón correspondiente a la ruta actual
+            const menuItems = document.querySelectorAll('.menu-item');
+            menuItems.forEach(item => {
+                const href = item.getAttribute('href');
+                if (href && currentPath.includes(href.split('/')[1])) {
                     item.classList.add('selected');
                 }
+
+                // Solo agregar el efecto glow en hover
+                item.addEventListener('mousemove', (e) => {
+                    const rect = item.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const glow = item.querySelector('.glow');
+                    glow.style.setProperty('--x', `${x}px`);
+                });
             });
         });
     </script>

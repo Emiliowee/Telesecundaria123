@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using ProyTelesecundaria.Models;
-using System.ComponentModel.DataAnnotations;
 
 namespace ProyTelesecundaria
 {
@@ -11,14 +10,58 @@ namespace ProyTelesecundaria
         {
         }
 
-        public required DbSet<Usuario> Usuarios { get; set; }
-        public required DbSet<Alumnos> Alumnos { get; set; }
-        public required DbSet<Aula> Aula { get; set; }
-        public required DbSet<MaestroMateria> MaestroMateria { get; set; }
-        public required DbSet<Maestros> Maestros { get; set; }
-        public required DbSet<DetallePrestamo> DetallePrestamo { get; set; }
-        public required DbSet<Materiales> Materiales { get; set; }
-        public required DbSet<Materias> Materias { get; set; }
-        public required DbSet<Prestamo> Prestamo { get; set; }
+        public DbSet<Usuario> Usuarios { get; set; }
+        public DbSet<Aula> Aula { get; set; }
+        public DbSet<Maestros> Maestros { get; set; }
+        public DbSet<Alumnos> Alumnos { get; set; }
+        public DbSet<Materia> Materias { get; set; }
+        public DbSet<AlumnoMateria> AlumnoMateria { get; set; }
+        public DbSet<MaestroMateria> MaestroMateria { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // Configuración de AlumnoMateria
+            modelBuilder.Entity<AlumnoMateria>()
+                .HasKey(am => new { am.Matricula, am.IDMateria, am.PeriodoBimestre });
+
+            modelBuilder.Entity<AlumnoMateria>()
+                .HasOne(am => am.Alumno)
+                .WithMany(a => a.AlumnoMaterias)
+                .HasForeignKey(am => am.Matricula)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<AlumnoMateria>()
+                .HasOne(am => am.Materia)
+                .WithMany(m => m.AlumnoMaterias)
+                .HasForeignKey(am => am.IDMateria)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Configuración de MaestroMateria
+            modelBuilder.Entity<MaestroMateria>()
+                .HasKey(mm => new { mm.IDMaestro, mm.IDMateria });
+
+            modelBuilder.Entity<MaestroMateria>()
+                .HasOne(mm => mm.Maestro)
+                .WithMany(m => m.MaestroMaterias)
+                .HasForeignKey(mm => mm.IDMaestro)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<MaestroMateria>()
+                .HasOne(mm => mm.Materia)
+                .WithMany(m => m.MaestroMaterias)
+                .HasForeignKey(mm => mm.IDMateria)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Configuración de nombres de tablas
+            modelBuilder.Entity<Usuario>().ToTable("Usuarios");
+            modelBuilder.Entity<Aula>().ToTable("Aulas");
+            modelBuilder.Entity<Maestros>().ToTable("Maestros");
+            modelBuilder.Entity<Alumnos>().ToTable("Alumnos");
+            modelBuilder.Entity<Materia>().ToTable("Materias");
+            modelBuilder.Entity<AlumnoMateria>().ToTable("AlumnoMateria");
+            modelBuilder.Entity<MaestroMateria>().ToTable("MaestroMateria");
+        }
     }
 }

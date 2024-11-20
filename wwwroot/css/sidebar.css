@@ -23,37 +23,25 @@ body {
 }
 
 .sidebar {
-    width: 220px;
+    width: 200px;
     height: 100vh;
     background: linear-gradient(to bottom, #32b8f7, #0D47A1 20%, #1565C0);
     display: flex;
     flex-direction: column;
     position: fixed;
-    animation: slideIn 0.8s ease-out;
     box-shadow: 2px 0 10px rgba(0,0,0,0.2);
 }
 
-@keyframes slideIn {
-    from {
-        transform: translateX(-100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
-
 .profile-section {
-    padding: 20px 0;
-    margin-bottom: 20px;
+    padding: 15px 0;
+    margin-bottom: 15px;
     text-align: center;
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .profile-circle {
-    width: 80px;
-    height: 80px;
+    width: 70px;
+    height: 70px;
     background-color: #fff9e5;
     border-radius: 50%;
     margin: 0 auto;
@@ -67,8 +55,8 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
     background: url('/api/placeholder/60/60') center/cover;
     animation: rotate 20s linear infinite;
 }
@@ -85,7 +73,7 @@ body {
 }
 
 .menu-item {
-    padding: 15px 20px;
+    padding: 12px 16px;
     color: white;
     text-decoration: none;
     display: flex;
@@ -93,15 +81,16 @@ body {
     transition: all 0.3s;
     position: relative;
     z-index: 1;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 400;
     margin: 3px 0;
     overflow: hidden;
 }
 
 .menu-item i {
-    margin-right: 10px;
-    width: 20px;
+    font-size: 14px;
+    margin-right: 8px;
+    width: 16px;
     text-align: center;
     transition: transform 0.3s;
 }
@@ -154,6 +143,7 @@ body {
     color: #385723 !important;
     font-weight: 500;
     position: relative;
+    background-color: rgba(255, 255, 255, 0.9);
 }
 
 .selected::before {
@@ -169,21 +159,11 @@ body {
     height: 4px;
     background-color: #FF4500;
     z-index: 2;
-    animation: slideInBar 0.3s ease-out;
-}
-
-@keyframes slideInBar {
-    from {
-        transform: translateX(-100%);
-    }
-    to {
-        transform: translateX(0);
-    }
 }
 
 .footer-section {
     margin-top: auto;
-    padding-bottom: 20px;
+    padding-bottom: 15px;
     opacity: 0.8;
     transition: opacity 0.3s;
 }
@@ -198,12 +178,12 @@ body {
 
 .tooltip {
     position: absolute;
-    left: 210px;
+    left: 190px;
     background: rgba(255, 255, 255, 0.8);
     color: white;
-    padding: 8px 12px;
+    padding: 6px 10px;
     border-radius: 4px;
-    font-size: 14px;
+    font-size: 12px;
     opacity: 0;
     visibility: hidden;
     transition: all 0.3s;
@@ -216,13 +196,16 @@ body {
     visibility: visible;
 }
 
-/* Estilos para el contenido principal */
 .content {
-    margin-left: 220px;
+    margin-left: 200px;
     padding: 20px;
     min-height: 100vh;
+    position: relative;
 }
 
+
 .main-content {
+    position: relative;
+    z-index: 1;
     padding: 20px;
 } 

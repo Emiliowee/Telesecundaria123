@@ -1,3 +1,8 @@
+@{
+    ViewData["Title"] = "Login";
+    Layout = null;
+}
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -5,7 +10,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iniciar Sesión</title>
-    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/css/Stylos.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -14,27 +19,21 @@
             align-items: center;
             height: 100vh;
             background-color: #f9f9f9;
-            /* Fondo claro */
             color: #333;
-            /* Color de texto oscuro */
             flex-direction: column;
         }
 
         .logo {
             width: 200px;
-            /* Ajusta el tamaño según sea necesario */
             height: auto;
             margin-bottom: 20px;
-            /* Espacio entre el logo y el formulario */
         }
 
         .login-container {
             background-color: #ffffff;
-            /* Fondo blanco para el formulario */
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            /* Sombra suave */
             width: 300px;
         }
 
@@ -42,7 +41,6 @@
             text-align: center;
             margin-bottom: 20px;
             color: #4caf50;
-            /* Color verde para un diseño amigable */
         }
 
         .login-container label {
@@ -50,7 +48,6 @@
             margin-bottom: 5px;
             font-weight: bold;
             color: #333;
-            /* Texto oscuro */
         }
 
         .login-container input,
@@ -59,79 +56,46 @@
             padding: 10px;
             margin-bottom: 15px;
             border: 1px solid #ccc;
-            /* Bordes suaves */
             border-radius: 5px;
             background-color: #f9f9f9;
-            /* Fondo claro para los inputs */
             color: #333;
-            /* Texto oscuro */
         }
 
         .login-container button {
             width: 100%;
             padding: 10px;
             background-color: #4caf50;
-            /* Botón verde */
             color: white;
             border: none;
             border-radius: 5px;
             font-size: 16px;
-            cursor: pointer;
-        }
-
-        .login-container button:hover {
-            background-color: #45a049;
-            /* Cambio de color al hacer hover */
         }
     </style>
 </head>
 
 <body>
-    <img class="logo" src="imagenes/Logo.jpg" alt="Logo del sitio">
+    <img class="logo" src="~/imagenes/Logo.jpg" alt="Logo del sitio">
     <br>
     <div class="login-container">
         <h2>Iniciar Sesión</h2>
-        <form id="loginForm">
-            <label for="correo">Correo</label>
-            <input type="email" id="correo" name="correo" required placeholder="Ingrese su correo">
+        @if (TempData["LoginError"] != null)
+        {
+            <div class="alert alert-danger">
+                @TempData["LoginError"]
+            </div>
+        }
+        <form asp-controller="Login" asp-action="Login" method="post">
+            <label for="correo">ID de Usuario</label>
+            <input type="text" id="correo" name="correo" required 
+                   placeholder="Ingrese su ID de usuario">
 
-            <label for="password">Contraseña</label>
-            <input type="password" id="password" name="contraseña" required placeholder="Ingrese su contraseña">
+            <label for="contraseña">Contraseña</label>
+            <input type="password" id="contraseña" name="contraseña" required 
+                   placeholder="Ingrese su contraseña">
 
             <button type="submit">Ingresar</button>
         </form>
     </div>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-    $(document).ready(function() {
-        $('#loginForm').on('submit', function(e) {
-            e.preventDefault();
-            
-            $.ajax({
-                url: '/Login/Authenticate',
-                type: 'POST',
-                data: {
-                    correo: $('#correo').val(),
-                    contraseña: $('#password').val()
-                },
-                success: function(response) {
-                    console.log('Respuesta del servidor:', response);
-                    if (response.success) {
-                        // Redirigir a la página principal
-                        window.location.href = response.redirectUrl;
-                    } else {
-                        alert('Credenciales inválidas');
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error:', error);
-                    alert('Error al intentar iniciar sesión');
-                }
-            });
-        });
-    });
-    </script>
 </body>
 
 </html>

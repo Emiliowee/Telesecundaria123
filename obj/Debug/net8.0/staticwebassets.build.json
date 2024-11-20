@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "kLetW2PEKwZvxP5EbzRjh9GEexjJasOboku4Cwy03ls=",
+  "Hash": "gbCNgW9E1yZfWK8jpp84EJACi+gLZJXIYLno24hD9Do=",
   "Source": "ProyTelesecundaria",
   "BasePath": "_content/ProyTelesecundaria",
   "Mode": "Default",
@@ -110,6 +110,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\css\\Stylos.css"
+    },
+    {
+      "Identity": "C:\\Users\\Emilio\\Desktop\\Telesecundaria\\ProyTelesecundaria\\wwwroot\\css\\usuarios.css",
+      "SourceId": "ProyTelesecundaria",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Emilio\\Desktop\\Telesecundaria\\ProyTelesecundaria\\wwwroot\\",
+      "BasePath": "_content/ProyTelesecundaria",
+      "RelativePath": "css/usuarios.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\css\\usuarios.css"
     },
     {
       "Identity": "C:\\Users\\Emilio\\Desktop\\Telesecundaria\\ProyTelesecundaria\\wwwroot\\favicon.ico",
@@ -300,6 +319,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\imagenes\\lineicons--user-4.png"
+    },
+    {
+      "Identity": "C:\\Users\\Emilio\\Desktop\\Telesecundaria\\ProyTelesecundaria\\wwwroot\\imagenes\\log1o.png",
+      "SourceId": "ProyTelesecundaria",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Emilio\\Desktop\\Telesecundaria\\ProyTelesecundaria\\wwwroot\\",
+      "BasePath": "_content/ProyTelesecundaria",
+      "RelativePath": "imagenes/log1o.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\imagenes\\log1o.png"
     },
     {
       "Identity": "C:\\Users\\Emilio\\Desktop\\Telesecundaria\\ProyTelesecundaria\\wwwroot\\imagenes\\logo busqueda.png",

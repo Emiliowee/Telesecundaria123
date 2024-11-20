@@ -1,57 +1,62 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+
 namespace ProyTelesecundaria.Models
 {
-   
+    [Table("Alumnos")]
     public class Alumnos
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Matricula { get; set; }
 
-        [Required(ErrorMessage = "El nombre es obligatorio")]
-        [StringLength(50, ErrorMessage = "El nombre no puede tener más de 50 caracteres")]
-        public string? Nombre { get; set; }
+        [Required]
+        [StringLength(50)]
+        public string Nombre { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "El apellido es obligatorio")]
-        [StringLength(50, ErrorMessage = "El apellido no puede tener más de 50 caracteres")]
-        public string? Apellido { get; set; }
+        [Required]
+        [StringLength(50)]
+        public string Apellido { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "La fecha de nacimiento es obligatoria")]
+        [Required]
         [DataType(DataType.Date)]
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-dd}")]
         public DateTime FechaNacimiento { get; set; }
 
-        [Required(ErrorMessage = "La dirección es obligatoria")]
+        [Required]
         [StringLength(100)]
-        public string? Direccion { get; set; }
+        public string Direccion { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "El teléfono es obligatorio")]
-        [Phone(ErrorMessage = "El número de teléfono no es válido")]
-        public string? Telefono { get; set; }
+        [Required]
+        [StringLength(15)]
+        public string Telefono { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "El teléfono del tutor es obligatorio")]
-        [Phone(ErrorMessage = "El número de teléfono del tutor no es válido")]
-        public string? TelefonoTutor { get; set; }
+        [Required]
+        [EmailAddress]
+        [StringLength(100)]
+        public string Correo { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "El correo es obligatorio")]
-        [EmailAddress(ErrorMessage = "El correo no es válido")]
-        public string? Correo { get; set; }
+        [Required]
+        [Range(1, 6)]
+        public int Grado { get; set; }
 
-        [Required(ErrorMessage = "El grado es obligatorio")]
-        public int? Grado { get; set; }
+        [Required]
+        [StringLength(1)]
+        public string Grupo { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "El grupo es obligatorio")]
-        [StringLength(5, ErrorMessage = "El grupo no puede tener más de 5 caracteres")]
-        public string? Grupo { get; set; }
+        [Required]
+        [StringLength(100)]
+        public string NombreTutor { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "El nombre del tutor es obligatorio")]
-        [StringLength(50)]
-        public string? NombreTutor { get; set; }
+        [Required]
+        [StringLength(15)]
+        public string TelefonoTutor { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "El correo del tutor es obligatorio")]
-        [EmailAddress(ErrorMessage = "El correo del tutor no es válido")]
-        public string? CorreoTutor { get; set; }
+        [Required]
+        [EmailAddress]
+        [StringLength(100)]
+        public string CorreoTutor { get; set; } = string.Empty;
+
+        // Propiedad de navegación para la relación con AlumnoMateria
+        public virtual ICollection<AlumnoMateria> AlumnoMaterias { get; set; } = new List<AlumnoMateria>();
     }
-}
-
-
+} 

@@ -1,0 +1,408 @@
+@model IEnumerable<ProyTelesecundaria.Models.Usuario>
+
+<div class="main-content">
+    <div class="container">
+        <h2 class="page-title">Gestión de Usuarios</h2>
+
+        <div class="search-section">
+            <div class="form-group">
+                <label for="searchId">ID de Usuario:</label>
+                <div class="search-container">
+                    <input type="text" id="searchId" name="searchId" 
+                           placeholder="Ingrese ID de usuario">
+                    <button id="searchButton" title="Buscar">
+                        <i class="fas fa-search"></i>
+                        Buscar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-wrapper">
+            <div class="form-section">
+                <form id="userForm" class="user-form">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="userId" name="userId">
+                    
+                    <div class="form-group">
+                        <label for="userName">Nombre de Usuario:</label>
+                        <input type="text" id="userName" name="userName" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="userEmail">Correo Electrónico:</label>
+                        <input type="email" id="userEmail" name="userEmail" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="userPassword">Contraseña:</label>
+                        <div class="password-container">
+                            <input type="password" id="userPassword" name="userPassword" required>
+                            <button type="button" class="toggle-password" id="togglePassword">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="userType">Tipo de Usuario:</label>
+                        <select id="userType" name="userType" required>
+                            <option value="">Seleccione tipo de usuario</option>
+                            <option value="Director">Director</option>
+                            <option value="Secretario">Secretario</option>
+                            <option value="Maestro">Maestro</option>
+                            <option value="Administrativo">Personal Administrativo</option>
+                        </select>
+                    </div>
+
+                    <div class="buttons-group">
+                        <button type="button" id="btnRegistrar" class="btn btn-registrar">
+                            <i class="fas fa-user-plus"></i> Registrar
+                        </button>
+                        <button type="button" id="btnModificar" class="btn btn-modificar">
+                            <i class="fas fa-edit"></i> Modificar
+                        </button>
+                        <button type="button" id="btnEliminar" class="btn btn-eliminar">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </button>
+                        <button type="button" id="btnLimpiar" class="btn btn-secondary">
+                            <i class="fas fa-broom"></i> Limpiar
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="table-container">
+                <table class="styled-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Correo</th>
+                            <th>Tipo Usuario</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        @foreach (var usuario in Model)
+                        {
+                            <tr>
+                                <td>@usuario.IDUsuario</td>
+                                <td>@usuario.Nombre</td>
+                                <td>@usuario.Correo</td>
+                                <td>@usuario.TipoUsuario</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <div class="pagination">
+                    <button id="prevPage" class="pagination-btn">
+                        <i class="fas fa-chevron-left"></i> Anterior
+                    </button>
+                    <div id="pageNumbers" class="page-numbers"></div>
+                    <button id="nextPage" class="pagination-btn">
+                        Siguiente <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Botones
+            const btnRegistrar = document.getElementById('btnRegistrar');
+            const btnModificar = document.getElementById('btnModificar');
+            const btnEliminar = document.getElementById('btnEliminar');
+            const btnLimpiar = document.getElementById('btnLimpiar');
+            const searchButton = document.getElementById('searchButton');
+
+            // Event Listeners
+            searchButton.addEventListener('click', buscarUsuario);
+            btnRegistrar.addEventListener('click', registrarUsuario);
+            btnModificar.addEventListener('click', modificarUsuario);
+            btnEliminar.addEventListener('click', eliminarUsuario);
+            btnLimpiar.addEventListener('click', limpiarFormulario);
+
+            // Agregar funcionalidad para mostrar/ocultar contraseña
+            const togglePassword = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('userPassword');
+
+            togglePassword.addEventListener('click', function() {
+                // Cambiar el tipo de input
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+
+                // Cambiar el icono
+                this.querySelector('i').classList.toggle('fa-eye');
+                this.querySelector('i').classList.toggle('fa-eye-slash');
+            });
+
+            // Agregar evento de doble clic a las filas de la tabla
+            const tableRows = document.querySelectorAll('.styled-table tbody tr');
+            tableRows.forEach(row => {
+                row.addEventListener('dblclick', async function() {
+                    const userId = this.cells[0].textContent; // Obtiene el ID de la primera celda
+                    try {
+                        const response = await fetch(`/Usuarios/BuscarUsuario/${userId}`);
+                        if (response.ok) {
+                            const usuario = await response.json();
+                            // Rellenar el formulario
+                            document.getElementById('searchId').value = usuario.idUsuario; // Rellena el campo de búsqueda
+                            document.getElementById('userId').value = usuario.idUsuario;
+                            document.getElementById('userName').value = usuario.nombre;
+                            document.getElementById('userEmail').value = usuario.correo;
+                            document.getElementById('userPassword').value = usuario.contraseña;
+                            document.getElementById('userType').value = usuario.tipoUsuario;
+                            
+                            // Resaltar la fila seleccionada
+                            tableRows.forEach(r => r.classList.remove('selected-row'));
+                            this.classList.add('selected-row');
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('Error al cargar los datos del usuario');
+                    }
+                });
+            });
+
+            // Variables para la paginación
+            const rowsPerPage = 5;
+            let currentPage = 1;
+            const tableBody = document.getElementById('tableBody');
+            const rows = Array.from(tableBody.getElementsByTagName('tr'));
+            const totalPages = Math.ceil(rows.length / rowsPerPage);
+
+            const prevButton = document.getElementById('prevPage');
+            const nextButton = document.getElementById('nextPage');
+            const pageNumbers = document.getElementById('pageNumbers');
+
+            function displayRows() {
+                const start = (currentPage - 1) * rowsPerPage;
+                const end = start + rowsPerPage;
+
+                rows.forEach((row, index) => {
+                    row.style.display = (index >= start && index < end) ? '' : 'none';
+                });
+            }
+
+            function updatePagination() {
+                // Actualizar botones de navegación
+                prevButton.disabled = currentPage === 1;
+                nextButton.disabled = currentPage === totalPages;
+
+                // Actualizar números de página
+                pageNumbers.innerHTML = '';
+                for (let i = 1; i <= totalPages; i++) {
+                    const pageNumber = document.createElement('span');
+                    pageNumber.className = `page-number ${i === currentPage ? 'active' : ''}`;
+                    pageNumber.textContent = i;
+                    pageNumber.addEventListener('click', () => {
+                        currentPage = i;
+                        displayRows();
+                        updatePagination();
+                    });
+                    pageNumbers.appendChild(pageNumber);
+                }
+            }
+
+            prevButton.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    displayRows();
+                    updatePagination();
+                }
+            });
+
+            nextButton.addEventListener('click', () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    displayRows();
+                    updatePagination();
+                }
+            });
+
+            // Inicializar la paginación
+            displayRows();
+            updatePagination();
+        });
+
+        async function buscarUsuario() {
+            const searchId = document.getElementById('searchId').value;
+            if (!searchId) {
+                alert('Por favor, ingrese un ID de usuario');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/Usuarios/BuscarUsuario/${searchId}`);
+                if (response.ok) {
+                    const usuario = await response.json();
+                    if (usuario) {
+                        document.getElementById('userId').value = usuario.idUsuario;
+                        document.getElementById('userName').value = usuario.nombre;
+                        document.getElementById('userEmail').value = usuario.correo;
+                        document.getElementById('userPassword').value = usuario.contraseña;
+                        document.getElementById('userType').value = usuario.tipoUsuario;
+                    } else {
+                        alert('Usuario no encontrado');
+                        limpiarFormulario();
+                    }
+                } else {
+                    alert('Usuario no encontrado');
+                    limpiarFormulario();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al buscar usuario');
+            }
+        }
+
+        async function registrarUsuario() {
+            if (!validarFormulario()) return;
+
+            const formData = {
+                Nombre: document.getElementById('userName').value,
+                Correo: document.getElementById('userEmail').value,
+                Contraseña: document.getElementById('userPassword').value,
+                TipoUsuario: document.getElementById('userType').value
+            };
+
+            try {
+                const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+                const response = await fetch('/Usuarios/Crear', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': token
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    alert('Usuario registrado exitosamente');
+                    limpiarFormulario();
+                    window.location.reload();
+                } else {
+                    alert('Error al registrar usuario');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al registrar usuario');
+            }
+        }
+
+        async function modificarUsuario() {
+            const userId = document.getElementById('userId').value;
+            if (!userId) {
+                alert('Por favor, primero busque un usuario por su ID');
+                return;
+            }
+
+            const datos = {
+                IDUsuario: parseInt(userId),
+                Nombre: document.getElementById('userName').value,
+                Correo: document.getElementById('userEmail').value,
+                Contraseña: document.getElementById('userPassword').value,
+                TipoUsuario: document.getElementById('userType').value
+            };
+
+            try {
+                const response = await fetch('/Usuarios/Editar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    },
+                    body: JSON.stringify(datos)
+                });
+
+                if (response.ok) {
+                    alert('Usuario modificado correctamente');
+                    window.location.reload();
+                } else {
+                    alert('Error al modificar el usuario');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al modificar el usuario');
+            }
+        }
+
+        async function eliminarUsuario() {
+            const userId = document.getElementById('userId').value;
+            if (!userId) {
+                alert('Por favor, primero busque un usuario por su ID');
+                return;
+            }
+
+            if (confirm('¿Está seguro de que desea eliminar este usuario?')) {
+                try {
+                    const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+                    const formData = new FormData();
+                    formData.append('id', userId);
+
+                    const response = await fetch(`/Usuarios/Eliminar/${userId}`, {
+                        method: 'POST',
+                        headers: {
+                            'RequestVerificationToken': token
+                        }
+                    });
+
+                    if (response.ok) {
+                        alert('Usuario eliminado correctamente');
+                        limpiarFormulario();
+                        window.location.reload();
+                    } else {
+                        alert('Error al eliminar el usuario');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Error al eliminar el usuario');
+                }
+            }
+        }
+
+        function limpiarFormulario() {
+            document.getElementById('searchId').value = '';
+            document.getElementById('userId').value = '';
+            document.getElementById('userName').value = '';
+            document.getElementById('userPassword').value = '';
+            document.getElementById('userEmail').value = '';
+            document.getElementById('userType').value = '';
+            
+            const tableRows = document.querySelectorAll('.styled-table tbody tr');
+            tableRows.forEach(row => row.classList.remove('selected-row'));
+        }
+
+        function validarFormulario() {
+            const nombre = document.getElementById('userName').value;
+            const correo = document.getElementById('userEmail').value;
+            const contraseña = document.getElementById('userPassword').value;
+            const tipoUsuario = document.getElementById('userType').value;
+
+            if (!nombre) {
+                alert('Por favor, ingrese el nombre del usuario');
+                return false;
+            }
+
+            if (!correo) {
+                alert('Por favor, ingrese el correo electrónico del usuario');
+                return false;
+            }
+
+            if (!contraseña) {
+                alert('Por favor, ingrese la contraseña del usuario');
+                return false;
+            }
+
+            if (!tipoUsuario) {
+                alert('Por favor, seleccione el tipo de usuario');
+                return false;
+            }
+
+            return true;
+        }
+    </script>
+} 

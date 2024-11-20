@@ -1,12 +1,16 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-public class Aula
+namespace ProyTelesecundaria.Models
 {
-    [Required]
-    [Key]
-    public int IDAula { get; set; }
-    [Required]
-    public int Capacidad { get; set; }
-  
-    // Relación
+    [Table("Aulas")]
+    public class Aula
+    {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public int IDAula { get; set; }
+        
+        [Required]
+        public int Capacidad { get; set; }
+    }
 }

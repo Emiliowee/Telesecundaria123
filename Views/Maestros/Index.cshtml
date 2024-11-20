@@ -1,0 +1,322 @@
+@model IEnumerable<ProyTelesecundaria.Models.Maestros>
+
+<div class="main-content">
+    <div class="container">
+        <h2 class="page-title">Gestión de Maestros</h2>
+
+        <!-- Sección de búsqueda y formulario -->
+        <div class="form-container">
+            <div class="search-section">
+                <div class="form-group">
+                    <label for="searchId">ID de Maestro:</label>
+                    <div class="search-container">
+                        <input type="text" id="searchId" name="searchId" 
+                               placeholder="Ingrese ID de maestro">
+                        <button id="searchButton" title="Buscar">
+                            <i class="fas fa-search"></i>
+                            Buscar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <form id="maestroForm" class="user-form">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="maestroId" name="maestroId">
+                    
+                    <div class="form-group">
+                        <label for="nombre">Nombre:</label>
+                        <input type="text" id="nombre" name="nombre" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="apellidos">Apellidos:</label>
+                        <input type="text" id="apellidos" name="apellidos" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="telefono">Teléfono:</label>
+                        <input type="tel" id="telefono" name="telefono" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="correo">Correo Electrónico:</label>
+                        <input type="email" id="correo" name="correo" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="horario">Horario:</label>
+                        <input type="text" id="horario" name="horario" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="idAula">Aula Asignada:</label>
+                        <select id="idAula" name="idAula" required>
+                            <option value="">Seleccione un aula</option>
+                            @foreach (var aula in ViewBag.Aulas)
+                            {
+                                <option value="@aula.IDAula">Aula @aula.IDAula - Capacidad: @aula.Capacidad</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="buttons-group">
+                        <button type="button" id="btnRegistrar" class="btn btn-registrar">
+                            <i class="fas fa-plus"></i> Registrar
+                        </button>
+                        <button type="button" id="btnModificar" class="btn btn-modificar">
+                            <i class="fas fa-edit"></i> Modificar
+                        </button>
+                        <button type="button" id="btnEliminar" class="btn btn-eliminar">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </button>
+                        <button type="button" id="btnLimpiar" class="btn btn-secondary">
+                            <i class="fas fa-broom"></i> Limpiar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tabla de Maestros -->
+        <div class="table-section">
+            <h3 class="section-title">Maestros Registrados</h3>
+            <div class="table-container">
+                <table class="styled-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Apellidos</th>
+                            <th>Teléfono</th>
+                            <th>Correo</th>
+                            <th>Horario</th>
+                            <th>Aula</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        @if (Model != null && Model.Any())
+                        {
+                            @foreach (var maestro in Model)
+                            {
+                                <tr>
+                                    <td>@maestro.IdMaestro</td>
+                                    <td>@maestro.Nombre</td>
+                                    <td>@maestro.Apellidos</td>
+                                    <td>@maestro.Telefono</td>
+                                    <td>@maestro.Correo</td>
+                                    <td>@maestro.Horario</td>
+                                    <td>@maestro.IdAula</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center">No hay maestros registrados</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Botones
+            const btnRegistrar = document.getElementById('btnRegistrar');
+            const btnModificar = document.getElementById('btnModificar');
+            const btnEliminar = document.getElementById('btnEliminar');
+            const btnLimpiar = document.getElementById('btnLimpiar');
+            const searchButton = document.getElementById('searchButton');
+
+            // Event Listeners
+            searchButton.addEventListener('click', buscarMaestro);
+            btnRegistrar.addEventListener('click', registrarMaestro);
+            btnModificar.addEventListener('click', modificarMaestro);
+            btnEliminar.addEventListener('click', eliminarMaestro);
+            btnLimpiar.addEventListener('click', limpiarFormulario);
+
+            // Doble clic en las filas de la tabla
+            const tabla = document.querySelector('.styled-table tbody');
+            tabla.addEventListener('dblclick', function(e) {
+                const fila = e.target.closest('tr');
+                if (fila) {
+                    const id = fila.cells[0].textContent;
+                    document.getElementById('searchId').value = id;
+                    buscarMaestro();
+                }
+            });
+        });
+
+        async function buscarMaestro() {
+            const id = document.getElementById('searchId').value;
+            if (!id) {
+                alert('Por favor, ingrese el ID del maestro');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/Maestros/BuscarMaestro/${id}`);
+                if (response.ok) {
+                    const maestro = await response.json();
+                    llenarFormulario(maestro);
+                } else {
+                    alert('Maestro no encontrado');
+                    limpiarFormulario();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al buscar el maestro');
+            }
+        }
+
+        async function registrarMaestro() {
+            if (!validarFormulario()) return;
+            if (!confirm('¿Desea registrar el maestro?')) return;
+
+            const maestro = obtenerDatosFormulario();
+
+            try {
+                const response = await fetch('/Maestros/Crear', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    },
+                    body: JSON.stringify(maestro)
+                });
+
+                const resultado = await response.text();
+                if (response.ok) {
+                    alert('Datos registrados correctamente');
+                    limpiarFormulario();
+                    window.location.reload();
+                } else {
+                    alert(resultado || 'Error al registrar el maestro');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al registrar el maestro');
+            }
+        }
+
+        async function modificarMaestro() {
+            if (!validarFormulario()) return;
+            if (!confirm('¿Desea modificar el maestro?')) return;
+
+            const maestro = obtenerDatosFormulario();
+
+            try {
+                const response = await fetch('/Maestros/Editar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    },
+                    body: JSON.stringify(maestro)
+                });
+
+                const resultado = await response.text();
+                if (response.ok) {
+                    alert('Cambios realizados con éxito');
+                    limpiarFormulario();
+                    window.location.reload();
+                } else {
+                    alert(resultado || 'Error al modificar el maestro');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al modificar el maestro');
+            }
+        }
+
+        async function eliminarMaestro() {
+            const id = document.getElementById('searchId').value;
+            if (!id) {
+                alert('Por favor, busque primero el maestro a eliminar');
+                return;
+            }
+
+            if (!confirm('¿Desea eliminar el maestro?')) return;
+
+            try {
+                const response = await fetch(`/Maestros/Eliminar/${id}`, {
+                    method: 'POST',
+                    headers: {
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    }
+                });
+
+                const resultado = await response.text();
+                if (response.ok) {
+                    alert('Los datos se eliminaron correctamente');
+                    limpiarFormulario();
+                    window.location.reload();
+                } else {
+                    alert(resultado || 'Error al eliminar el maestro');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al eliminar el maestro');
+            }
+        }
+
+        function llenarFormulario(maestro) {
+            document.getElementById('maestroId').value = maestro.idMaestro;
+            document.getElementById('nombre').value = maestro.nombre;
+            document.getElementById('apellidos').value = maestro.apellidos;
+            document.getElementById('telefono').value = maestro.telefono;
+            document.getElementById('correo').value = maestro.correo;
+            document.getElementById('horario').value = maestro.horario;
+            document.getElementById('idAula').value = maestro.idAula;
+        }
+
+        function obtenerDatosFormulario() {
+            return {
+                idMaestro: document.getElementById('searchId').value,
+                nombre: document.getElementById('nombre').value,
+                apellidos: document.getElementById('apellidos').value,
+                telefono: document.getElementById('telefono').value,
+                correo: document.getElementById('correo').value,
+                horario: document.getElementById('horario').value,
+                idAula: document.getElementById('idAula').value
+            };
+        }
+
+        function limpiarFormulario() {
+            document.getElementById('searchId').value = '';
+            document.getElementById('maestroId').value = '';
+            document.getElementById('nombre').value = '';
+            document.getElementById('apellidos').value = '';
+            document.getElementById('telefono').value = '';
+            document.getElementById('correo').value = '';
+            document.getElementById('horario').value = '';
+            document.getElementById('idAula').value = '';
+            
+            const tableRows = document.querySelectorAll('.styled-table tbody tr');
+            tableRows.forEach(row => row.classList.remove('selected-row'));
+        }
+
+        function validarFormulario() {
+            const id = document.getElementById('searchId').value;
+            const nombre = document.getElementById('nombre').value;
+            const apellidos = document.getElementById('apellidos').value;
+            const telefono = document.getElementById('telefono').value;
+            const correo = document.getElementById('correo').value;
+            const horario = document.getElementById('horario').value;
+            const idAula = document.getElementById('idAula').value;
+
+            if (!id || !nombre || !apellidos || !telefono || !correo || !horario || !idAula) {
+                alert('Por favor, complete todos los campos');
+                return false;
+            }
+
+            return true;
+        }
+    </script>
+} 

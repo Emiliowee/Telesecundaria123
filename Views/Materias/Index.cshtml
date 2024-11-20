@@ -1,0 +1,281 @@
+@model IEnumerable<ProyTelesecundaria.Models.Materia>
+
+<div class="main-content">
+    <div class="container">
+        <h2 class="page-title">Gestión de Materias</h2>
+
+        <div class="form-container">
+            <div class="search-section">
+                <div class="form-group">
+                    <label for="searchId">ID de Materia:</label>
+                    <div class="search-container">
+                        <input type="text" id="searchId" name="searchId" 
+                               placeholder="Ingrese ID de materia">
+                        <button id="searchButton" title="Buscar">
+                            <i class="fas fa-search"></i>
+                            Buscar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <form id="materiaForm" class="user-form">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="materiaId" name="materiaId">
+                    
+                    <div class="form-group">
+                        <label for="nombre">Nombre de la Materia:</label>
+                        <input type="text" id="nombre" name="nombre" required>
+                    </div>
+
+                    <div class="buttons-group">
+                        <button type="button" id="btnRegistrar" class="btn btn-registrar">
+                            <i class="fas fa-plus"></i> Registrar
+                        </button>
+                        <button type="button" id="btnModificar" class="btn btn-modificar">
+                            <i class="fas fa-edit"></i> Modificar
+                        </button>
+                        <button type="button" id="btnEliminar" class="btn btn-eliminar">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </button>
+                        <button type="button" id="btnLimpiar" class="btn btn-secondary">
+                            <i class="fas fa-broom"></i> Limpiar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="table-section">
+            <h3 class="section-title">Materias Registradas</h3>
+            <div class="table-container">
+                <table class="styled-table">
+                    <thead>
+                        <tr>
+                            <th>ID Materia</th>
+                            <th>Nombre</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        @if (Model != null && Model.Any())
+                        {
+                            @foreach (var materia in Model)
+                            {
+                                <tr>
+                                    <td>@materia.IDMateria</td>
+                                    <td>@materia.Nombre</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="2" class="text-center">No hay materias registradas</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Botones
+            const btnRegistrar = document.getElementById('btnRegistrar');
+            const btnModificar = document.getElementById('btnModificar');
+            const btnEliminar = document.getElementById('btnEliminar');
+            const btnLimpiar = document.getElementById('btnLimpiar');
+            const searchButton = document.getElementById('searchButton');
+
+            // Event Listeners
+            btnRegistrar.addEventListener('click', registrarMateria);
+            btnModificar.addEventListener('click', modificarMateria);
+            btnEliminar.addEventListener('click', eliminarMateria);
+            btnLimpiar.addEventListener('click', limpiarFormulario);
+            searchButton.addEventListener('click', buscarMateria);
+
+            // Agregar evento click a las filas de la tabla
+            const tbody = document.getElementById('tableBody');
+            tbody.addEventListener('click', function(e) {
+                const tr = e.target.closest('tr');
+                if (!tr) return;
+
+                // Remover selección previa
+                const prevSelected = document.querySelector('.selected-row');
+                if (prevSelected) prevSelected.classList.remove('selected-row');
+                
+                // Seleccionar nueva fila
+                tr.classList.add('selected-row');
+
+                // Obtener datos de la fila
+                const idMateria = tr.cells[0].textContent;
+                const nombre = tr.cells[1].textContent;
+
+                // Llenar el formulario
+                document.getElementById('searchId').value = idMateria;
+                document.getElementById('nombre').value = nombre;
+            });
+        });
+
+        async function buscarMateria() {
+            const id = document.getElementById('searchId').value;
+            if (!id) {
+                alert('Por favor, ingrese un ID de materia');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/Materias/BuscarMateria/${id}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('nombre').value = data.materia.nombre;
+                    
+                    // Seleccionar la fila en la tabla
+                    const rows = document.querySelectorAll('#tableBody tr');
+                    rows.forEach(row => {
+                        if (row.cells[0].textContent === id) {
+                            const prevSelected = document.querySelector('.selected-row');
+                            if (prevSelected) prevSelected.classList.remove('selected-row');
+                            row.classList.add('selected-row');
+                        }
+                    });
+                } else {
+                    alert(data.message);
+                    limpiarFormulario();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al buscar la materia');
+            }
+        }
+
+        async function registrarMateria() {
+            if (!validarFormulario()) return;
+
+            const materia = obtenerDatosFormulario();
+            try {
+                const response = await fetch('/Materias/Crear', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    },
+                    body: JSON.stringify(materia)
+                });
+
+                const data = await response.json();
+                alert(data.message);
+                
+                if (data.success) {
+                    limpiarFormulario();
+                    window.location.reload();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al registrar la materia');
+            }
+        }
+
+        async function modificarMateria() {
+            if (!validarFormulario()) return;
+
+            const materia = obtenerDatosFormulario();
+            try {
+                const response = await fetch('/Materias/Editar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    },
+                    body: JSON.stringify(materia)
+                });
+
+                const data = await response.json();
+                alert(data.message);
+                
+                if (data.success) {
+                    limpiarFormulario();
+                    window.location.reload();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al modificar la materia');
+            }
+        }
+
+        async function eliminarMateria() {
+            const id = document.getElementById('searchId').value;
+            if (!id) {
+                alert('Por favor, primero busque una materia');
+                return;
+            }
+
+            if (!confirm('¿Está seguro de que desea eliminar esta materia?')) {
+                return;
+            }
+
+            try {
+                const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+                const response = await fetch('/Materias/Eliminar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': token
+                    },
+                    body: JSON.stringify(parseInt(id))
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                alert(data.message);
+                
+                if (data.success) {
+                    limpiarFormulario();
+                    window.location.reload();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al eliminar la materia. Por favor, intente nuevamente.');
+            }
+        }
+
+        function obtenerDatosFormulario() {
+            return {
+                IDMateria: parseInt(document.getElementById('searchId').value),
+                Nombre: document.getElementById('nombre').value
+            };
+        }
+
+        function limpiarFormulario() {
+            document.getElementById('searchId').value = '';
+            document.getElementById('nombre').value = '';
+            const selectedRow = document.querySelector('.selected-row');
+            if (selectedRow) selectedRow.classList.remove('selected-row');
+        }
+
+        function validarFormulario() {
+            const id = document.getElementById('searchId').value;
+            const nombre = document.getElementById('nombre').value;
+
+            if (!id) {
+                alert('Por favor, ingrese el ID de la materia');
+                return false;
+            }
+
+            if (!nombre) {
+                alert('Por favor, ingrese el nombre de la materia');
+                return false;
+            }
+
+            return true;
+        }
+    </script>
+}

@@ -159,3 +159,4 @@ C:\Users\Emilio\Desktop\Telesecundaria\ProyTelesecundaria\obj\Debug\net8.0\refin
 C:\Users\Emilio\Desktop\Telesecundaria\ProyTelesecundaria\obj\Debug\net8.0\ProyTelesecundaria.pdb
 C:\Users\Emilio\Desktop\Telesecundaria\ProyTelesecundaria\obj\Debug\net8.0\ProyTelesecundaria.genruntimeconfig.cache
 C:\Users\Emilio\Desktop\Telesecundaria\ProyTelesecundaria\obj\Debug\net8.0\ref\ProyTelesecundaria.dll
+C:\Users\Emilio\Desktop\Telesecundaria\ProyTelesecundaria\obj\Debug\net8.0\ProyTelesecundaria.sourcelink.json

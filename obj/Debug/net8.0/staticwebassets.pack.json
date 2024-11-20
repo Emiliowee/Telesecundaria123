@@ -17,6 +17,10 @@
       "PackagePath": "staticwebassets\\css\\site.css"
     },
     {
+      "Id": "C:\\Users\\Emilio\\Desktop\\Telesecundaria\\ProyTelesecundaria\\wwwroot\\css\\usuarios.css",
+      "PackagePath": "staticwebassets\\css\\usuarios.css"
+    },
+    {
       "Id": "C:\\Users\\Emilio\\Desktop\\Telesecundaria\\ProyTelesecundaria\\wwwroot\\favicon.ico",
       "PackagePath": "staticwebassets\\favicon.ico"
     },
@@ -59,6 +63,10 @@
     {
       "Id": "C:\\Users\\Emilio\\Desktop\\Telesecundaria\\ProyTelesecundaria\\wwwroot\\imagenes\\lineicons--user-4.png",
       "PackagePath": "staticwebassets\\imagenes\\lineicons--user-4.png"
+    },
+    {
+      "Id": "C:\\Users\\Emilio\\Desktop\\Telesecundaria\\ProyTelesecundaria\\wwwroot\\imagenes\\log1o.png",
+      "PackagePath": "staticwebassets\\imagenes\\log1o.png"
     },
     {
       "Id": "C:\\Users\\Emilio\\Desktop\\Telesecundaria\\ProyTelesecundaria\\wwwroot\\imagenes\\logo busqueda.png",

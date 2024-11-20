@@ -1,0 +1,264 @@
+@model IEnumerable<ProyTelesecundaria.Models.Aula>
+
+<div class="main-content">
+    <div class="container">
+        <h2 class="page-title">Gestión de Aulas</h2>
+
+        <!-- Sección de búsqueda y formulario -->
+        <div class="form-container">
+            <div class="search-section">
+                <div class="form-group">
+                    <label for="searchId">ID de Aula:</label>
+                    <div class="search-container">
+                        <input type="text" id="searchId" name="searchId" 
+                               placeholder="Ingrese ID de aula">
+                        <button id="searchButton" title="Buscar">
+                            <i class="fas fa-search"></i>
+                            Buscar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <form id="aulaForm" class="user-form">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="aulaId" name="aulaId">
+                    
+                    <div class="form-group">
+                        <label for="capacidad">Capacidad del Aula:</label>
+                        <input type="number" id="capacidad" name="capacidad" required min="1">
+                    </div>
+
+                    <div class="buttons-group">
+                        <button type="button" id="btnRegistrar" class="btn btn-registrar">
+                            <i class="fas fa-plus"></i> Registrar
+                        </button>
+                        <button type="button" id="btnModificar" class="btn btn-modificar">
+                            <i class="fas fa-edit"></i> Modificar
+                        </button>
+                        <button type="button" id="btnEliminar" class="btn btn-eliminar">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </button>
+                        <button type="button" id="btnLimpiar" class="btn btn-secondary">
+                            <i class="fas fa-broom"></i> Limpiar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tabla de Aulas -->
+        <div class="table-section">
+            <h3 class="section-title">Aulas Registradas</h3>
+            <div class="table-container">
+                <table class="styled-table">
+                    <thead>
+                        <tr>
+                            <th>ID Aula</th>
+                            <th>Capacidad</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        @if (Model != null && Model.Any())
+                        {
+                            @foreach (var aula in Model)
+                            {
+                                <tr>
+                                    <td>@aula.IDAula</td>
+                                    <td>@aula.Capacidad alumnos</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="2" class="text-center">No hay aulas registradas</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <div class="pagination">
+                    <button id="prevPage" class="pagination-btn">
+                        <i class="fas fa-chevron-left"></i> Anterior
+                    </button>
+                    <div id="pageNumbers" class="page-numbers"></div>
+                    <button id="nextPage" class="pagination-btn">
+                        Siguiente <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Botones
+            const btnRegistrar = document.getElementById('btnRegistrar');
+            const btnModificar = document.getElementById('btnModificar');
+            const btnEliminar = document.getElementById('btnEliminar');
+            const btnLimpiar = document.getElementById('btnLimpiar');
+            const searchButton = document.getElementById('searchButton');
+
+            // Event Listeners
+            searchButton.addEventListener('click', buscarAula);
+            btnRegistrar.addEventListener('click', registrarAula);
+            btnModificar.addEventListener('click', modificarAula);
+            btnEliminar.addEventListener('click', eliminarAula);
+            btnLimpiar.addEventListener('click', limpiarFormulario);
+
+            // Agregar doble clic a las filas de la tabla
+            const tableRows = document.querySelectorAll('.styled-table tbody tr');
+            tableRows.forEach(row => {
+                row.addEventListener('dblclick', function() {
+                    const id = this.cells[0].textContent;
+                    document.getElementById('searchId').value = id;
+                    buscarAula();
+                });
+            });
+        });
+
+        async function buscarAula() {
+            const id = document.getElementById('searchId').value;
+            if (!id) {
+                alert('Por favor, ingrese un ID de aula');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/Aulas/BuscarAula/${id}`);
+                if (response.ok) {
+                    const aula = await response.json();
+                    document.getElementById('aulaId').value = aula.idAula;
+                    document.getElementById('capacidad').value = aula.capacidad;
+                } else {
+                    alert('Aula no encontrada');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al buscar aula');
+            }
+        }
+
+        async function registrarAula() {
+            if (!validarFormulario()) return;
+
+            const datos = {
+                IDAula: parseInt(document.getElementById('searchId').value),
+                Capacidad: parseInt(document.getElementById('capacidad').value)
+            };
+
+            try {
+                const response = await fetch('/Aulas/Crear', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    },
+                    body: JSON.stringify(datos)
+                });
+
+                if (response.ok) {
+                    alert('Aula registrada exitosamente');
+                    limpiarFormulario();
+                    window.location.reload();
+                } else {
+                    const error = await response.text();
+                    alert(error || 'Error al registrar aula');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al registrar aula');
+            }
+        }
+
+        async function modificarAula() {
+            if (!validarFormulario()) return;
+
+            const datos = {
+                IDAula: parseInt(document.getElementById('searchId').value),
+                Capacidad: parseInt(document.getElementById('capacidad').value)
+            };
+
+            try {
+                const response = await fetch('/Aulas/Editar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    },
+                    body: JSON.stringify(datos)
+                });
+
+                if (response.ok) {
+                    alert('Aula modificada correctamente');
+                    window.location.reload();
+                } else {
+                    alert('Error al modificar el aula');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al modificar el aula');
+            }
+        }
+
+        async function eliminarAula() {
+            const id = document.getElementById('searchId').value;
+            if (!id) {
+                alert('Por favor, primero busque un aula por su ID');
+                return;
+            }
+
+            if (confirm('¿Está seguro de que desea eliminar esta aula?')) {
+                try {
+                    const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+                    const response = await fetch(`/Aulas/Eliminar/${id}`, {
+                        method: 'POST',
+                        headers: {
+                            'RequestVerificationToken': token
+                        }
+                    });
+
+                    if (response.ok) {
+                        alert('Aula eliminada correctamente');
+                        limpiarFormulario();
+                        window.location.reload();
+                    } else {
+                        alert('Error al eliminar el aula');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Error al eliminar el aula');
+                }
+            }
+        }
+
+        function limpiarFormulario() {
+            document.getElementById('searchId').value = '';
+            document.getElementById('aulaId').value = '';
+            document.getElementById('capacidad').value = '';
+            
+            const tableRows = document.querySelectorAll('.styled-table tbody tr');
+            tableRows.forEach(row => row.classList.remove('selected-row'));
+        }
+
+        function validarFormulario() {
+            const id = document.getElementById('searchId').value;
+            const capacidad = document.getElementById('capacidad').value;
+
+            if (!id) {
+                alert('Por favor, ingrese el ID del aula');
+                return false;
+            }
+
+            if (!capacidad || capacidad < 1) {
+                alert('Por favor, ingrese una capacidad válida');
+                return false;
+            }
+
+            return true;
+        }
+    </script>
+} 
